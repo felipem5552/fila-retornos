@@ -20,6 +20,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/tasks', tasksRoutes);
 
+// Redireciona para a tela de login
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+});
+
 /* Cria os logins iniciais só na primeiríssima vez que o servidor sobe
    (banco vazio). Depois disso, tudo é gerenciado pelo painel Admin —
    este seed nunca roda de novo nem sobrescreve o que já existe. */
