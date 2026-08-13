@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar — Fila de Retornos</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  body{display:flex;align-items:center;justify-content:center;}
+  .login-card{width:340px;max-width:92vw;padding:28px 26px;}
+  .login-card h1{font-size:17px;margin:0 0 4px;}
+  .login-card p{font-size:12.5px;color:var(--text-3);margin:0 0 22px;}
+  .login-card .btn-primary{width:100%;justify-content:center;margin-top:4px;}
+  .error-box{background:var(--crit-bg);border:1px solid var(--crit-border);color:var(--crit-text);border-radius:8px;padding:9px 12px;font-size:12.5px;margin-bottom:16px;display:none;}
+</style>
+</head>
+<body>
+  <form class="card login-card" id="loginForm">
+    <h1>Fila de Retornos</h1>
+    <p>Entre com seu usuário e senha.</p>
+    <div class="error-box" id="errorBox"></div>
+    <div class="field">
+      <label for="username">Usuário</label>
+      <input type="text" id="username" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="password">Senha</label>
+      <input type="password" id="password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn btn-primary" id="btnEntrar">Entrar</button>
+  </form>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errorBox = document.getElementById('errorBox');
+  const btn = document.getElementById('btnEntrar');
+  errorBox.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Entrando…';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: document.getElementById('username').value.trim(),
+        password: document.getElementById('password').value
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Falha ao entrar.');
+
+    window.location.href = data.role === 'admin' ? 'admin.html' : 'app.html';
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+
+// Se já tiver sessão válida, pula direto pro app.
+fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(me => {
+  if (me) window.location.href = me.role === 'admin' ? 'admin.html' : 'app.html';
+});
+</script>
+</body>
+</html>

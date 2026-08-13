@@ -1,0 +1,17 @@
+{
+  "name": "retornos-app",
+  "version": "1.0.0",
+  "description": "Fila de Retornos com login real, banco de dados e painel admin",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cookie-parser": "^1.4.6",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.4.5"
+  }
+}
