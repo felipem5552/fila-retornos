@@ -14,7 +14,11 @@ const tasksRoutes = require('./routes/tasks.routes');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public_react')));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) return next();
+  res.sendFile(path.join(__dirname, '..', 'public_react', 'index.html'));
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
