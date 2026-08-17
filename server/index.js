@@ -14,19 +14,18 @@ const tasksRoutes = require('./routes/tasks.routes');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', 'public_react')));
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/')) return next();
-  res.sendFile(path.join(__dirname, '..', 'public_react', 'index.html'));
-});
 
+// 1. ROTAS DA API
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/tasks', tasksRoutes);
 
-// Redireciona para a tela de login
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+// 2. SERVIR ARQUIVOS ESTÁTICOS DA PASTA COMPILADA DO REACT
+app.use(express.static(path.join(__dirname, '..', 'public_react')));
+
+// 3. RETORNAR O INDEX.HTML DO REACT PARA QUALQUER OUTRA ROTA (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public_react', 'index.html'));
 });
 
 /* Cria os logins iniciais só na primeiríssima vez que o servidor sobe
