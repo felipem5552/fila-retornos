@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 
 const { readDb, writeDb } = require('./db');
@@ -14,19 +15,27 @@ const tasksRoutes = require('./routes/tasks.routes');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+const REACT_BUILD_DIR = path.join(__dirname, '..', 'public_react');
+const REACT_INDEX = path.join(REACT_BUILD_DIR, 'index.html');
 
-// 1. ROTAS DA API
+app.use(express.static(REACT_BUILD_DIR));
+
+// Fallback de SPA: qualquer rota que não seja /api/* recebe o index.html do
+// React (as rotas do react-router, tipo /admin, são resolvidas no navegador).
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) return next();
+  if (!fs.existsSync(REACT_INDEX)) {
+    return res.status(500).send(
+      'Build do front-end não encontrado (public_react/index.html). ' +
+      'Rode "npm run build:client" antes de "npm start".'
+    );
+  }
+  res.sendFile(REACT_INDEX);
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/tasks', tasksRoutes);
-
-// 2. SERVIR ARQUIVOS ESTÁTICOS DA PASTA COMPILADA DO REACT
-app.use(express.static(path.join(__dirname, '..', 'public_react')));
-
-// 3. RETORNAR O INDEX.HTML DO REACT PARA QUALQUER OUTRA ROTA (SPA)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public_react', 'index.html'));
-});
 
 /* Cria os logins iniciais só na primeiríssima vez que o servidor sobe
    (banco vazio). Depois disso, tudo é gerenciado pelo painel Admin —

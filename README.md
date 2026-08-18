@@ -36,3 +36,17 @@ Tudo que existia (KPIs, banner de próximo retorno, métricas por motivo,
 filtros, tabela com WhatsApp/concluir/editar/menu de mais ações, diálogo
 definitivo/atualização, timeline de estágios, alarme sonoro, export CSV)
 está no React, chamando a mesma API do servidor.
+
+## Deploy em host (Render, Railway, etc.)
+
+O "Not Found" costuma acontecer quando o host só roda `npm install` e
+`npm start`, sem compilar o React antes. Configure exatamente assim no
+painel do serviço:
+
+- **Build command**: `npm run build`  (isso já entra em `client/` e gera `public_react/`)
+- **Start command**: `npm start`
+- **Root directory**: a raiz deste projeto (onde está o `package.json` principal, não a pasta `client`)
+- **Variável de ambiente**: `JWT_SECRET` com uma string aleatória
+
+Se aparecer a mensagem "Build do front-end não encontrado", é sinal de
+que o `npm run build` não rodou — confirme o build command acima.

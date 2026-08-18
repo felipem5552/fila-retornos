@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "build:client": "cd client && npm install && npm run build",
-    "postinstall": "echo 'Rode: npm run build:client (uma vez) antes de npm start'"
+    "build": "npm run build:client",
+    "build:client": "cd client && npm install && npm run build"
   },
   "dependencies": {
     "express": "^4.19.2",
