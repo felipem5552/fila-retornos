@@ -6,9 +6,17 @@ export default function Popover({ anchorRect, items, onClose }) {
   useEffect(() => {
     function onDocClick(e) { if (ref.current && !ref.current.contains(e.target)) onClose(); }
     function onEsc(e) { if (e.key === 'Escape') onClose(); }
-    document.addEventListener('click', onDocClick);
+    // Registra o listener só depois que o clique atual (o que abriu o
+    // popover) já terminou de se propagar — evita fechar no mesmo clique.
+    const t = setTimeout(() => {
+      document.addEventListener('click', onDocClick);
+    }, 0);
     document.addEventListener('keydown', onEsc);
-    return () => { document.removeEventListener('click', onDocClick); document.removeEventListener('keydown', onEsc); };
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onEsc);
+    };
   }, [onClose]);
 
   if (!anchorRect) return null;
