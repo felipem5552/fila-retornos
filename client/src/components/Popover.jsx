@@ -1,13 +1,16 @@
+// client/src/components/Popover.jsx
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
+// Renderizado via Portal direto no <body>: assim ele nunca fica preso
+// pelo overflow:hidden/auto da tabela, independente de onde o botão
+// que o abriu esteja no DOM.
 export default function Popover({ anchorRect, items, onClose }) {
   const ref = useRef(null);
 
   useEffect(() => {
     function onDocClick(e) { if (ref.current && !ref.current.contains(e.target)) onClose(); }
     function onEsc(e) { if (e.key === 'Escape') onClose(); }
-    // Registra o listener só depois que o clique atual (o que abriu o
-    // popover) já terminou de se propagar — evita fechar no mesmo clique.
     const t = setTimeout(() => {
       document.addEventListener('click', onDocClick);
     }, 0);
@@ -20,9 +23,16 @@ export default function Popover({ anchorRect, items, onClose }) {
   }, [onClose]);
 
   if (!anchorRect) return null;
-  const style = { display:'block', top: anchorRect.bottom + 6, left: Math.max(8, anchorRect.right - 210) };
 
-  return (
+  const width = 210;
+  const style = {
+    display: 'block',
+    position: 'fixed',
+    top: anchorRect.bottom + 6,
+    left: Math.max(8, Math.min(anchorRect.right - width, window.innerWidth - width - 8)),
+  };
+
+  return createPortal(
     <div className="popover open" style={style} ref={ref}>
       {items.map((it, i) => it.sep
         ? <div className="sep" key={i}></div>
@@ -30,6 +40,7 @@ export default function Popover({ anchorRect, items, onClose }) {
           ? <div className="p-label" key={i}>{it.label}</div>
           : <button key={i} className={it.danger ? 'danger' : ''} onClick={() => { onClose(); it.action(); }}>{it.text}</button>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }
