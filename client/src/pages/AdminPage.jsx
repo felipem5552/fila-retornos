@@ -1,4 +1,3 @@
-// client/src/pages/AdminPage.jsx
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UsersAPI } from '../api/client';
@@ -6,17 +5,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 
 const EMPTY = { id:null, nome:'', username:'', password:'', role:'user' };
-
-const IconEdit = () => (
-  <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
-    <path d="M4 20H8L18.5 9.5C19.3 8.7 19.3 7.4 18.5 6.6L17.4 5.5C16.6 4.7 15.3 4.7 14.5 5.5L4 16V20Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-  </svg>
-);
-const IconTrash = () => (
-  <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
-    <path d="M5 7H19M9 7V5A1 1 0 0110 4H14A1 1 0 0115 5V7M18 7L17.3 19A1 1 0 0116.3 20H7.7A1 1 0 016.7 19L6 7H18Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-  </svg>
-);
 
 export default function AdminPage() {
   const { user, logout } = useAuth();
@@ -99,29 +87,31 @@ export default function AdminPage() {
           </div>
         </form>
 
-        <div className="card table-card">
+        <div className="card">
           <table style={{ width:'100%', borderCollapse:'collapse' }}>
             <thead>
               <tr>
-                <th>Nome</th>
-                <th>Login</th>
-                <th>Papel</th>
-                <th>Criado em</th>
-                <th></th>
+                <th style={{ textAlign:'left', fontSize:11, textTransform:'uppercase', color:'var(--text-tertiary)', padding:'10px 12px', borderBottom:'1px solid var(--border-subtle)', background:'var(--bg-elevated)' }}>Nome</th>
+                <th style={{ textAlign:'left', fontSize:11, textTransform:'uppercase', color:'var(--text-tertiary)', padding:'10px 12px', borderBottom:'1px solid var(--border-subtle)', background:'var(--bg-elevated)' }}>Login</th>
+                <th style={{ textAlign:'left', fontSize:11, textTransform:'uppercase', color:'var(--text-tertiary)', padding:'10px 12px', borderBottom:'1px solid var(--border-subtle)', background:'var(--bg-elevated)' }}>Papel</th>
+                <th style={{ textAlign:'left', fontSize:11, textTransform:'uppercase', color:'var(--text-tertiary)', padding:'10px 12px', borderBottom:'1px solid var(--border-subtle)', background:'var(--bg-elevated)' }}>Criado em</th>
+                <th style={{ background:'var(--bg-elevated)' }}></th>
               </tr>
             </thead>
             <tbody>
               {users.length === 0 && <tr><td colSpan={5} style={{ padding:'10px 12px', fontSize:13 }}>Nenhum usuário cadastrado.</td></tr>}
               {users.map(u => (
                 <tr key={u.id}>
-                  <td>{u.nome}</td>
-                  <td>{u.username}</td>
-                  <td><span className={`badge role-${u.role}`}>{u.role === 'admin' ? 'Admin' : 'Usuário'}</span></td>
-                  <td>{new Date(u.createdAt).toLocaleDateString('pt-BR')}</td>
-                  <td>
+                  <td style={{ padding:'10px 12px', fontSize:13, borderBottom:'1px solid var(--border-subtle)' }}>{u.nome}</td>
+                  <td style={{ padding:'10px 12px', fontSize:13, borderBottom:'1px solid var(--border-subtle)' }}>{u.username}</td>
+                  <td style={{ padding:'10px 12px', fontSize:13, borderBottom:'1px solid var(--border-subtle)' }}>
+                    <span className={`badge role-${u.role}`}>{u.role === 'admin' ? 'Admin' : 'Usuário'}</span>
+                  </td>
+                  <td style={{ padding:'10px 12px', fontSize:13, borderBottom:'1px solid var(--border-subtle)' }}>{new Date(u.createdAt).toLocaleDateString('pt-BR')}</td>
+                  <td style={{ padding:'10px 12px', borderBottom:'1px solid var(--border-subtle)' }}>
                     <div style={{ display:'flex', gap:6 }}>
-                      <button className="act-btn edit" title="Editar" onClick={() => startEdit(u)}><IconEdit /></button>
-                      <button className="act-btn danger" title="Excluir" onClick={() => handleDelete(u.id)}><IconTrash /></button>
+                      <button className="btn btn-sm" onClick={() => startEdit(u)}>Editar</button>
+                      <button className="btn btn-sm btn-danger" onClick={() => handleDelete(u.id)}>Excluir</button>
                     </div>
                   </td>
                 </tr>
