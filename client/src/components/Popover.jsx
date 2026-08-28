@@ -20,7 +20,7 @@ export default function Popover({ anchorRect, items, onClose }) {
         ? <div className="sep" key={i}></div>
         : it.label
           ? <div className="p-label" key={i}>{it.label}</div>
-          : <button key={i} className={it.danger ? 'danger' : ''} onClick={() => { onClose(); it.action(); }}>{it.text}</button>
+          : <button key={i} className={it.danger ? 'danger' : ''} onClick={() => { onClose(); it.action(); }}>{it.icon}{it.text}</button>
       )}
     </div>
   );
