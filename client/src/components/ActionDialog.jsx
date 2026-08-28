@@ -26,8 +26,11 @@ export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoo
   const noLabel = tipo === 'concluir' ? 'Não, é só uma atualização' : 'Não, está pendente de algo';
 
   return (
-    <div className="action-box open">
+    <div className="action-box open" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="action-card">
+        <button className="action-close" title="Fechar sem salvar" onClick={onClose}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+        </button>
         <h3>{title}</h3>
         <p className="action-client">{task.nome} · {task.motivo}</p>
 
