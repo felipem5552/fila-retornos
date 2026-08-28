@@ -84,8 +84,16 @@ export function useTasks() {
     return () => { clearInterval(id); if (alarmIntervalRef.current) clearInterval(alarmIntervalRef.current); };
   }, [load]);
 
-  const createTask = useCallback(async (body) => { await TasksAPI.create(body); await load(); }, [load]);
-  const updateTask = useCallback(async (id, body) => { await TasksAPI.update(id, body); await load(); }, [load]);
+  const createTask = useCallback(async (body) => {
+    const created = await TasksAPI.create(body);
+    setTasks(prev => [...prev, created]);
+    load();
+  }, [load]);
+  const updateTask = useCallback(async (id, body) => {
+    const updated = await TasksAPI.update(id, body);
+    setTasks(prev => prev.map(t => t.id === id ? updated : t));
+    load();
+  }, [load]);
   const deleteTask = useCallback(async (id) => { await TasksAPI.remove(id); await load(); }, [load]);
   const runAction = useCallback(async (id, body) => {
     ringingRef.current.delete(id);
