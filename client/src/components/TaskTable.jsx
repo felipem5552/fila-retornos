@@ -1,4 +1,5 @@
-import { MOTIVO_CLASS, formatDateTime, formatDuration, formatElapsed, getLastPendenciaDate, minutesUntil, STALE_HOURS, urgencyState, WARNING_MINUTES } from '../utils/format';
+import { MOTIVO_CLASS, formatDateTime, formatDuration, minutesUntil, urgencyState, WARNING_MINUTES } from '../utils/format';
+import { IconAlertClock } from './icons.jsx';
 
 const ICON_CHAT = <svg viewBox="0 0 24 24" fill="none"><path d="M20 12C20 16.4 16.4 20 12 20C10.7 20 9.5 19.7 8.4 19.1L4 20L5.1 16.1C4.4 14.9 4 13.5 4 12C4 7.6 7.6 4 12 4C16.4 4 20 7.6 20 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>;
 const ICON_TICKET = <svg viewBox="0 0 24 24" fill="none"><path d="M4 8A2 2 0 016 6H18A2 2 0 0120 8V9A2 2 0 0020 13V14A2 2 0 0118 16H6A2 2 0 014 14V13A2 2 0 004 9V8Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>;
@@ -66,25 +67,13 @@ function PendingRow({ t, onComplete, onEdit, onMore }) {
   else if (diff <= WARNING_MINUTES) timing = <span className="timing-pill warn">Em {diff} min</span>;
   else timing = <span className="timing-pill ok">em {diff} min</span>;
 
-  let pendenciaBadge = null;
-  if (t.ultima_pendencia) {
-    const lastData = getLastPendenciaDate(t);
-    const horas = lastData ? (Date.now() - new Date(lastData).getTime()) / 3600000 : 0;
-    const stale = horas >= STALE_HOURS;
-    pendenciaBadge = (
-      <span className={`pendencia-badge ${stale ? 'stale' : ''}`} title={`Desde ${lastData ? formatDateTime(lastData) : '—'}`}>
-        ⏳ {t.ultima_pendencia} · {formatElapsed(horas)}
-      </span>
-    );
-  }
-
   return (
     <tr className={rowClass}>
       <td className="cell-empresa">#{t.empresa_id}</td>
       <td className="cell-nome">
         {t.nome}
         <span className="cell-sub">{timing}</span>
-        {pendenciaBadge}
+        {t.ultima_pendencia && <span className="pendencia-badge">{IconAlertClock}{t.ultima_pendencia}</span>}
       </td>
       <td><span className={`badge ${motivoClass}`}><span className="badge-dot"></span>{t.motivo}</span></td>
       <td className="cell-datahora">{formatDateTime(t.data_hora)}</td>
@@ -94,7 +83,7 @@ function PendingRow({ t, onComplete, onEdit, onMore }) {
         <div className="actions" style={{ justifyContent:'flex-end' }}>
           <button className="act-btn done" title="Concluir" onClick={() => onComplete(t)}>{ICON_CHECK}</button>
           <button className="act-btn edit" title="Editar" onClick={() => onEdit(t)}>{ICON_EDIT}</button>
-          <button className="act-btn more" title="Mais ações" onClick={(e) => onMore(e, t)}>{ICON_MORE}</button>
+          <button className="act-btn more" title="Mais ações" onClick={(e) => { e.stopPropagation(); onMore(e, t); }}>{ICON_MORE}</button>
         </div>
       </td>
     </tr>
@@ -115,7 +104,7 @@ function DoneRow({ t, onReopen, onMore }) {
       <td>
         <div className="actions" style={{ justifyContent:'flex-end' }}>
           <button className="act-btn reopen" title="Reabrir" onClick={() => onReopen(t)}>{ICON_REOPEN}</button>
-          <button className="act-btn more" title="Mais ações" onClick={(e) => onMore(e, t)}>{ICON_MORE}</button>
+          <button className="act-btn more" title="Mais ações" onClick={(e) => { e.stopPropagation(); onMore(e, t); }}>{ICON_MORE}</button>
         </div>
       </td>
     </tr>

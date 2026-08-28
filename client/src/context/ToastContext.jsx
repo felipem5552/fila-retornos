@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useState } from 'react';
+import { IconX } from '../components/icons.jsx';
 
 const ToastContext = createContext(null);
 
@@ -32,7 +33,7 @@ export function ToastProvider({ children }) {
                 </div>
               )}
             </div>
-            <button className="toast-x" onClick={() => dismissToast(t.id)}>✕</button>
+            <button className="toast-x" onClick={() => dismissToast(t.id)}>{IconX}</button>
           </div>
         ))}
       </div>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
-export default function Header({ searchQuery, setSearchQuery, idSearch, setIdSearch, onNovo, onFoco }) {
+export default function Header({ searchQuery, setSearchQuery, idSearch, setIdSearch, onNovo }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [idOpen, setIdOpen] = useState(false);
@@ -38,9 +38,6 @@ export default function Header({ searchQuery, setSearchQuery, idSearch, setIdSea
               onChange={e => setIdSearch(e.target.value)} />
           </div>
         </div>
-        <button className="btn btn-icon" title="Modo Foco" onClick={onFoco}>
-          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/><path d="M12 3V6M12 18V21M3 12H6M18 12H21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
-        </button>
         <button className="btn btn-primary" onClick={onNovo}>+ Novo Retorno</button>
         <span className="user-pill" style={{ fontSize:12.5, color:'var(--text-secondary)' }}>{user?.nome}</span>
         {user?.role === 'admin' && <button className="btn btn-sm" onClick={() => navigate('/admin')}>Painel Admin</button>}

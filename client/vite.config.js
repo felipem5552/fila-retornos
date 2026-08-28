@@ -7,5 +7,5 @@ export default defineConfig({
     port: 5173,
     proxy: { '/api': 'http://localhost:3000' }
   },
-  build: { outDir: '../public_react' }
+  build: { outDir: '../public_react', emptyOutDir: true }
 });
