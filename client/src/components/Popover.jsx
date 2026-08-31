@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 export default function Popover({ anchorEl, items, onClose }) {
   const ref = useRef(null);
-  const [rect, setRect] = useState(null);
+  const [anchorRect, setAnchorRect] = useState(null);
+  const [style, setStyle] = useState({ visibility: 'hidden', top: 0, left: 0 });
 
   useEffect(() => {
     if (!anchorEl) return;
-    function reposition() { setRect(anchorEl.getBoundingClientRect()); }
+    function reposition() { setAnchorRect(anchorEl.getBoundingClientRect()); }
     reposition();
     window.addEventListener('scroll', reposition, true);
     window.addEventListener('resize', reposition);
@@ -16,6 +17,18 @@ export default function Popover({ anchorEl, items, onClose }) {
     };
   }, [anchorEl]);
 
+  useLayoutEffect(() => {
+    if (!anchorRect || !ref.current) return;
+    const popRect = ref.current.getBoundingClientRect();
+    let top = anchorRect.bottom + 6;
+    let left = anchorRect.right - popRect.width;
+    if (left < 8) left = 8;
+    if (left + popRect.width > window.innerWidth - 8) left = window.innerWidth - popRect.width - 8;
+    if (top + popRect.height > window.innerHeight - 8) top = anchorRect.top - popRect.height - 6;
+    if (top < 8) top = 8;
+    setStyle({ visibility: 'visible', top, left });
+  }, [anchorRect, items]);
+
   useEffect(() => {
     function onDocClick(e) { if (ref.current && !ref.current.contains(e.target) && e.target !== anchorEl) onClose(); }
     function onEsc(e) { if (e.key === 'Escape') onClose(); }
@@ -24,8 +37,7 @@ export default function Popover({ anchorEl, items, onClose }) {
     return () => { document.removeEventListener('click', onDocClick); document.removeEventListener('keydown', onEsc); };
   }, [onClose, anchorEl]);
 
-  if (!rect) return null;
-  const style = { display:'block', top: rect.bottom + 6, left: Math.max(8, rect.right - 210) };
+  if (!anchorRect) return null;
 
   return (
     <div className="popover open" style={style} ref={ref}>
