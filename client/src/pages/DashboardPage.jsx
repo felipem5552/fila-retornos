@@ -94,7 +94,7 @@ export default function DashboardPage() {
     showToast('Retorno duplicado para amanhã.');
   }
 
-  function openMore(e, task) { setPopover({ rect: e.currentTarget.getBoundingClientRect(), task }); }
+  function openMore(e, task) { setPopover({ el: e.currentTarget, task }); }
   function closePopover() { setPopover(null); }
 
   useEffect(() => {
@@ -177,7 +177,7 @@ export default function DashboardPage() {
         />
       )}
 
-      {popover && <Popover anchorRect={popover.rect} items={buildMenuItems(popover.task)} onClose={closePopover} />}
+      {popover && <Popover anchorEl={popover.el} items={buildMenuItems(popover.task)} onClose={closePopover} />}
     </div>
   );
 }
