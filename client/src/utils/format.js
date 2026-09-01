@@ -27,6 +27,15 @@ export function toDateInputValue(d) {
   const p = n => String(n).padStart(2,'0');
   return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
 }
+export function localInputToISO(value) {
+  // value: "YYYY-MM-DDTHH:mm" digitado pelo usuário no fuso local do navegador.
+  // new Date(y,m,d,h,min) usa o fuso do NAVEGADOR (correto), diferente de
+  // new Date("YYYY-MM-DDTHH:mm") que seria interpretado no fuso do SERVIDOR.
+  const [datePart, timePart] = value.split('T');
+  const [y, mo, d] = datePart.split('-').map(Number);
+  const [h, mi] = timePart.split(':').map(Number);
+  return new Date(y, mo - 1, d, h, mi).toISOString();
+}
 export function minutesUntil(iso) { return Math.round((new Date(iso).getTime() - Date.now()) / 60000); }
 export function isSameDay(a,b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 export function isThisWeek(d) {

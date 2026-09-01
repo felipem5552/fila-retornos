@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { toLocalInputValue } from '../utils/format';
+import { localInputToISO, toLocalInputValue } from '../utils/format';
 
 export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoozeChip, onSnoozeCustom, onConfirmMotivo }) {
   const [step, setStep] = useState('1');
@@ -61,7 +61,7 @@ export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoo
             </div>
             <div className="action-choice-row">
               <button className="btn" onClick={() => setStep('1')}>Voltar</button>
-              <button className="btn btn-primary" onClick={() => { onSnoozeCustom(customData); onClose(); }}>Confirmar data específica</button>
+              <button className="btn btn-primary" onClick={() => { onSnoozeCustom(localInputToISO(customData)); onClose(); }}>Confirmar data específica</button>
             </div>
           </div>
         )}
@@ -87,7 +87,7 @@ export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoo
             </div>
             <div className="action-choice-row">
               <button className="btn" onClick={() => setStep('1')}>Voltar</button>
-              <button className="btn btn-primary" onClick={() => { onConfirmMotivo({ motivo_pendencia: motivo, observacao: obs, nova_data: novaData }); onClose(); }}>
+              <button className="btn btn-primary" onClick={() => { onConfirmMotivo({ motivo_pendencia: motivo, observacao: obs, nova_data: localInputToISO(novaData) }); onClose(); }}>
                 {tipo === 'concluir' ? 'Registrar atualização' : 'Confirmar'}
               </button>
             </div>

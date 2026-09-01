@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { formatDateTime, toLocalInputValue } from '../utils/format';
+import { formatDateTime, localInputToISO, toLocalInputValue } from '../utils/format';
 
 function stageLabel(it) {
   if (it.acao === 'criacao') return it.definitivo === false ? (it.motivo_pendencia || 'Aberto') : 'Aberto';
@@ -60,7 +60,7 @@ export default function TaskPanel({ task, open, onClose, onSave }) {
     e.preventDefault();
     const body = {
       empresa_id: form.empresa_id.trim(), nome: form.nome.trim(), motivo: form.motivo,
-      data_hora: form.data_hora, link_chat: form.link_chat.trim(),
+      data_hora: localInputToISO(form.data_hora), link_chat: form.link_chat.trim(),
       link_ticket: form.link_ticket.trim(), anotacoes: form.anotacoes.trim()
     };
     onSave(body, form.pendencia, task);
