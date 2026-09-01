@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const { readDb, writeDb } = require('./db');
+const { init, readDb, writeDb } = require('./db');
 const { hashPassword } = require('./auth');
 
 const authRoutes = require('./routes/auth.routes');
@@ -59,7 +59,15 @@ function seedIfEmpty() {
   console.log('  analista2  / poli123');
   console.log('==================================================================');
 }
-seedIfEmpty();
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando em http://localhost:${PORT}`));
+
+init()
+  .then(() => {
+    seedIfEmpty();
+    app.listen(PORT, () => console.log(`Servidor rodando em http://localhost:${PORT}`));
+  })
+  .catch(err => {
+    console.error('Falha ao conectar no banco (DATABASE_URL configurada?):', err.message);
+    process.exit(1);
+  });

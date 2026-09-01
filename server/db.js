@@ -1,32 +1,59 @@
 /* ==================================================================
-   PERSISTÊNCIA — arquivo JSON simples em disco.
-   Escolhido no lugar de um banco "de verdade" (Postgres/SQLite nativo)
-   para não depender de nenhuma dependência nativa/compilação, o que
-   facilita rodar em qualquer host (Render, Railway, VPS, etc) sem dor
-   de cabeça. Para uma equipe pequena/média isso é suficiente. Se um
-   dia o volume crescer muito, trocar por Postgres é uma migração
-   localizada só neste arquivo — o resto do app não muda.
+   PERSISTÊNCIA — Postgres (Neon), com cache em memória.
+   Todas as rotas continuam chamando readDb()/writeDb() de forma
+   síncrona, exatamente como antes (nenhuma rota precisou mudar).
+   O estado inteiro ({users, tasks}) fica em memória (cache) e é
+   espelhado no Postgres a cada writeDb(), como um único JSON numa
+   tabela key-value — assim os dados sobrevivem a restart/deploy no
+   Render, que tem filesystem efêmero.
    ================================================================== */
-const fs = require('fs');
-const path = require('path');
+const { Pool } = require('pg');
 
-const DB_PATH = path.join(__dirname, '..', 'data', 'db.json');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
 
-function ensureDb() {
-  const dir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (!fs.existsSync(DB_PATH)) {
-    fs.writeFileSync(DB_PATH, JSON.stringify({ users: [], tasks: [] }, null, 2));
+let cache = null;
+
+async function init() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS kv_store (
+      key TEXT PRIMARY KEY,
+      value JSONB NOT NULL
+    )
+  `);
+
+  const { rows } = await pool.query(`SELECT value FROM kv_store WHERE key = 'db'`);
+  if (rows.length > 0) {
+    cache = rows[0].value;
+  } else {
+    cache = { users: [], tasks: [] };
+    await pool.query(
+      `INSERT INTO kv_store (key, value) VALUES ('db', $1::jsonb)`,
+      [JSON.stringify(cache)]
+    );
   }
 }
 
 function readDb() {
-  ensureDb();
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  if (cache === null) {
+    throw new Error('DB não inicializado: chame init() (await) antes de usar readDb/writeDb.');
+  }
+  return cache;
 }
 
 function writeDb(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+  cache = data;
+  // Persistência assíncrona "fire-and-forget": a memória já está
+  // atualizada na hora (resposta da API não espera o Postgres),
+  // e o Postgres é sincronizado em segundo plano.
+  pool.query(
+    `UPDATE kv_store SET value = $1::jsonb WHERE key = 'db'`,
+    [JSON.stringify(data)]
+  ).catch(err => {
+    console.error('[db] Falha ao persistir no Postgres:', err.message);
+  });
 }
 
-module.exports = { readDb, writeDb };
+module.exports = { init, readDb, writeDb };

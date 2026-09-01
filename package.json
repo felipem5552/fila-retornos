@@ -10,10 +10,11 @@
     "build:client": "cd client && npm install && npm run build"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "cookie-parser": "^1.4.6",
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "dotenv": "^16.4.5"
+    "pg": "^8.23.0"
   }
 }
