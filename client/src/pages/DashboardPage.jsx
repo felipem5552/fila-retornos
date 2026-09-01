@@ -11,7 +11,7 @@ import AlarmOverlay from '../components/AlarmOverlay.jsx';
 import Popover from '../components/Popover.jsx';
 import { useTasks } from '../hooks/useTasks.js';
 import { useToast } from '../context/ToastContext.jsx';
-import { buildCardSummary, buildICS, buildReturnMessage, copyToClipboard, downloadFile, formatDateTime, isSameDay, isThisWeek, toDateInputValue } from '../utils/format';
+import { buildCardSummary, buildICS, buildReturnMessage, copyToClipboard, downloadCSV, downloadFile, formatDateTime, formatDuration, isSameDay, isThisMonth, isThisWeek, minutesUntil, toDateInputValue, urgencyState } from '../utils/format';
 
 const ICONS = {
   clock: <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8"/><path d="M12 8V12L15 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>,
@@ -31,6 +31,7 @@ export default function DashboardPage() {
   const [idSearch, setIdSearch] = useState('');
   const [activeMotivos, setActiveMotivos] = useState(new Set());
   const [dateFilter, setDateFilter] = useState('');
+  const [onlyAtrasados, setOnlyAtrasados] = useState(false);
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -56,10 +57,17 @@ export default function DashboardPage() {
     if (dateFilter) {
       list = list.filter(t => toDateInputValue(new Date(activeTab === 'pendentes' ? t.data_hora : (t.concluido_em || t.data_hora))) === dateFilter);
     }
-    return list.slice().sort((a,b) => activeTab === 'pendentes'
-      ? new Date(a.data_hora) - new Date(b.data_hora)
-      : new Date(b.concluido_em || b.data_hora) - new Date(a.concluido_em || a.data_hora));
-  }, [tasks, activeTab, searchQuery, idSearch, activeMotivos, dateFilter]);
+    if (onlyAtrasados && activeTab === 'pendentes') list = list.filter(t => minutesUntil(t.data_hora) < 0);
+    // Ordenação por urgência: atrasados (critical) primeiro, depois avisos (warning), depois normais.
+    // Dentro de cada grupo, o mais antigo/mais atrasado vem primeiro.
+    const prioridade = { critical: 0, warning: 1, normal: 2 };
+    return list.slice().sort((a,b) => {
+      if (activeTab !== 'pendentes') return new Date(b.concluido_em || b.data_hora) - new Date(a.concluido_em || a.data_hora);
+      const pa = prioridade[urgencyState(a.data_hora)], pb = prioridade[urgencyState(b.data_hora)];
+      if (pa !== pb) return pa - pb;
+      return new Date(a.data_hora) - new Date(b.data_hora);
+    });
+  }, [tasks, activeTab, searchQuery, idSearch, activeMotivos, dateFilter, onlyAtrasados]);
 
   const countPendentes = tasks.filter(t => t.status === 'Pendente').length;
   const countHistorico = tasks.filter(t => t.status === 'Concluido').length;
@@ -139,7 +147,7 @@ export default function DashboardPage() {
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} idSearch={idSearch} setIdSearch={setIdSearch}
         onNovo={openNovo} onFoco={() => {}} />
 
-      <KpiGrid tasks={tasks} />
+      <KpiGrid tasks={tasks} onFilterAtrasados={() => setOnlyAtrasados(v => !v)} filterActive={onlyAtrasados} />
       <UrgencyStrip tasks={tasks} soundOn={soundOn} setSoundOn={setSoundOn} />
       <MetricsPanel tasks={tasks} />
       <Toolbar activeMotivos={activeMotivos} toggleMotivo={toggleMotivo} dateFilter={dateFilter} setDateFilter={setDateFilter} tasks={tasks} />

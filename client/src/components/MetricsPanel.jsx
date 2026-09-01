@@ -1,5 +1,7 @@
 import { MOTIVOS, formatDuration } from '../utils/format';
 
+const ACUMULO_LIMITE = 5;
+
 export default function MetricsPanel({ tasks }) {
   const pendentes = tasks.filter(t => t.status === 'Pendente');
   const concluidos = tasks.filter(t => t.status === 'Concluido');
@@ -18,14 +20,17 @@ export default function MetricsPanel({ tasks }) {
       <div className="metrics-cols">
         <div className="metrics-col">
           <h3>Retornos pendentes por motivo</h3>
-          <p className="hint">Ajuda a ver onde está concentrado o volume do dia.</p>
-          {MOTIVOS.map((m,i) => (
-            <div className="bar-row" key={m}>
-              <span className="bar-label">{m}</span>
-              <span className="bar-track"><span className="bar-fill" style={{ width: `${(contagens[i]/maxCont)*100}%` }}></span></span>
-              <span className="bar-count">{contagens[i]}</span>
-            </div>
-          ))}
+          <p className="hint">Ajuda a ver onde está concentrado o volume do dia. Acima de {ACUMULO_LIMITE} pendentes, o motivo é destacado.</p>
+          {MOTIVOS.map((m,i) => {
+            const acumulado = contagens[i] >= ACUMULO_LIMITE;
+            return (
+              <div className={`bar-row${acumulado ? ' bar-row-alert' : ''}`} key={m}>
+                <span className="bar-label">{acumulado && '⚠ '}{m}</span>
+                <span className="bar-track"><span className={`bar-fill${acumulado ? ' bar-fill-alert' : ''}`} style={{ width: `${(contagens[i]/maxCont)*100}%` }}></span></span>
+                <span className="bar-count">{contagens[i]}</span>
+              </div>
+            );
+          })}
         </div>
         <div className="metrics-col">
           <h3>Tempo médio de atendimento por motivo</h3>

@@ -1,6 +1,6 @@
 import { formatDuration, isSameDay, minutesUntil, WARNING_MINUTES } from '../utils/format';
 
-export default function KpiGrid({ tasks }) {
+export default function KpiGrid({ tasks, onFilterAtrasados, filterActive }) {
   const pendentes = tasks.filter(t => t.status === 'Pendente');
   const concluidos = tasks.filter(t => t.status === 'Concluido');
 
@@ -14,7 +14,10 @@ export default function KpiGrid({ tasks }) {
 
   return (
     <div className="kpi-grid" id="kpiGrid">
-      <div className="kpi-card"><div className="kpi-label">Atrasados agora</div><div className="kpi-value crit">{atrasados}</div><div className="kpi-sub">passaram do horário</div></div>
+      <div className={`kpi-card${atrasados > 0 ? ' kpi-clickable' : ''}${filterActive ? ' kpi-active' : ''}`}
+        onClick={() => atrasados > 0 && onFilterAtrasados()} title={atrasados > 0 ? 'Clique para ver só os atrasados' : ''}>
+        <div className="kpi-label">Atrasados agora</div><div className="kpi-value crit">{atrasados}</div><div className="kpi-sub">{filterActive ? 'clique para limpar o filtro' : 'passaram do horário'}</div>
+      </div>
       <div className="kpi-card"><div className="kpi-label">Próximos 15 min</div><div className="kpi-value warn">{proximos}</div><div className="kpi-sub">atenção nos próximos minutos</div></div>
       <div className="kpi-card"><div className="kpi-label">Concluídos hoje</div><div className="kpi-value ok">{concluidosHoje}</div><div className="kpi-sub">retornos finalizados hoje</div></div>
       <div className="kpi-card"><div className="kpi-label">Tempo médio de atendimento</div><div className="kpi-value accent">{tempoMedio}</div><div className="kpi-sub">criação até conclusão</div></div>
