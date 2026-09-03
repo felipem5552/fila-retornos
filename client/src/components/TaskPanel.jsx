@@ -40,7 +40,8 @@ function StageTimeline({ task }) {
   );
 }
 
-const EMPTY = { empresa_id:'', nome:'', motivo:'Suporte', data_hora:'', link_chat:'', link_ticket:'', anotacoes:'', pendencia:'' };
+const SETORES = ['Financeiro', 'Suporte N2/Dev', 'Comercial', 'Homologação/Meta', 'Outro setor'];
+const EMPTY = { empresa_id:'', nome:'', motivo:'Suporte', data_hora:'', link_chat:'', link_ticket:'', anotacoes:'', pendencia:'', pendenciaSetor:SETORES[0] };
 
 export default function TaskPanel({ task, open, onClose, onSave }) {
   const [form, setForm] = useState(EMPTY);
@@ -50,7 +51,7 @@ export default function TaskPanel({ task, open, onClose, onSave }) {
     setForm(task ? {
       empresa_id: task.empresa_id, nome: task.nome, motivo: task.motivo,
       data_hora: toLocalInputValue(task.data_hora), link_chat: task.link_chat || '',
-      link_ticket: task.link_ticket || '', anotacoes: task.anotacoes || '', pendencia: ''
+      link_ticket: task.link_ticket || '', anotacoes: task.anotacoes || '', pendencia:'', pendenciaSetor: SETORES[0]
     } : { ...EMPTY, data_hora: toLocalInputValue(new Date().toISOString()) });
   }, [task, open]);
 
@@ -63,7 +64,9 @@ export default function TaskPanel({ task, open, onClose, onSave }) {
       data_hora: localInputToISO(form.data_hora), link_chat: form.link_chat.trim(),
       link_ticket: form.link_ticket.trim(), anotacoes: form.anotacoes.trim()
     };
-    onSave(body, form.pendencia, task);
+    const pendenciaFinal = form.pendencia === 'Aguardando outro setor'
+      ? `Aguardando outro setor (${form.pendenciaSetor})` : form.pendencia;
+    onSave(body, pendenciaFinal, task);
   }
 
   return (
@@ -120,6 +123,11 @@ export default function TaskPanel({ task, open, onClose, onSave }) {
               <option>Aguardando aprovação interna</option>
               <option>Outro</option>
             </select>
+            {form.pendencia === 'Aguardando outro setor' && (
+              <select style={{ marginTop:8 }} value={form.pendenciaSetor} onChange={e => set('pendenciaSetor', e.target.value)}>
+                {SETORES.map(s => <option key={s}>{s}</option>)}
+              </select>
+            )}
             <div className="hint">Marque se esse retorno já nasce esperando algo.</div>
           </div>
           <div className="field">

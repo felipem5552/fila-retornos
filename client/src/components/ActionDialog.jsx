@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { localInputToISO, toLocalInputValue } from '../utils/format';
 
+const SETORES = ['Financeiro', 'Suporte N2/Dev', 'Comercial', 'Homologação/Meta', 'Outro setor'];
+
 export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoozeChip, onSnoozeCustom, onConfirmMotivo }) {
   const [step, setStep] = useState('1');
   const [motivo, setMotivo] = useState('Aguardando outro setor');
+  const [setor, setSetor] = useState(SETORES[0]);
   const [obs, setObs] = useState('');
   const [novaData, setNovaData] = useState('');
   const [customData, setCustomData] = useState('');
@@ -77,6 +80,14 @@ export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoo
                 <option>Outro</option>
               </select>
             </div>
+            {motivo === 'Aguardando outro setor' && (
+              <div className="field">
+                <label>Qual setor?</label>
+                <select value={setor} onChange={e => setSetor(e.target.value)}>
+                  {SETORES.map(s => <option key={s}>{s}</option>)}
+                </select>
+              </div>
+            )}
             <div className="field">
               <label>Observação (opcional)</label>
               <textarea value={obs} onChange={e => setObs(e.target.value)} placeholder="Detalhe rápido do que está pendente…"></textarea>
@@ -87,7 +98,7 @@ export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoo
             </div>
             <div className="action-choice-row">
               <button className="btn" onClick={() => setStep('1')}>Voltar</button>
-              <button className="btn btn-primary" onClick={() => { onConfirmMotivo({ motivo_pendencia: motivo, observacao: obs, nova_data: localInputToISO(novaData) }); onClose(); }}>
+              <button className="btn btn-primary" onClick={() => { onConfirmMotivo({ motivo_pendencia: motivo === 'Aguardando outro setor' ? `Aguardando outro setor (${setor})` : motivo, observacao: obs, nova_data: localInputToISO(novaData) }); onClose(); }}>
                 {tipo === 'concluir' ? 'Registrar atualização' : 'Confirmar'}
               </button>
             </div>

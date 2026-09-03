@@ -94,10 +94,14 @@ export default function DashboardPage() {
     await deleteTask(t.id); showToast('Retorno excluído.');
   }
   async function handleDuplicate(t) {
+    const motivoReagendo = prompt('Por que está duplicando/reagendando este retorno? (ex: alta demanda hoje, cliente pediu, etc.)\nDeixe em branco para pular.');
+    const anotacoesFinal = motivoReagendo && motivoReagendo.trim()
+      ? `[Reagendado — motivo: ${motivoReagendo.trim()}] ${t.anotacoes || ''}`.trim()
+      : (t.anotacoes || '');
     await createTask({
       empresa_id: t.empresa_id, nome: t.nome, motivo: t.motivo,
       data_hora: new Date(Date.now() + 24*3600000).toISOString(),
-      link_chat: t.link_chat, link_ticket: t.link_ticket, anotacoes: t.anotacoes
+      link_chat: t.link_chat, link_ticket: t.link_ticket, anotacoes: anotacoesFinal
     });
     showToast('Retorno duplicado para amanhã.');
   }
