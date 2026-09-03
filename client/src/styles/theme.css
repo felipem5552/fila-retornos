@@ -8,18 +8,18 @@
     --text-primary:#EDF2FA;
     --text-secondary:#9FADC4;
     --text-tertiary:#66748F;
-    --accent:#45D8C6;
-    --accent-strong:#22C5B0;
-    --accent-soft:rgba(69,216,198,0.12);
-    --accent-indigo:#8AA0FF;
-    --warn-bg:rgba(245,196,81,0.14);
-    --warn-border:rgba(245,196,81,0.45);
-    --warn-text:#F5C451;
-    --crit-bg:rgba(242,99,123,0.16);
-    --crit-border:rgba(242,99,123,0.5);
-    --crit-text:#FF8FA3;
-    --ok-bg:rgba(111,227,166,0.14);
-    --ok-text:#6FE3A6;
+    --accent:#6666DE;
+    --accent-strong:#0000C8;
+    --accent-soft:rgba(102,102,222,0.14);
+    --accent-indigo:#5800FF;
+    --warn-bg:rgba(255,202,93,0.14);
+    --warn-border:rgba(255,202,93,0.45);
+    --warn-text:#FFCA5D;
+    --crit-bg:rgba(255,103,95,0.16);
+    --crit-border:rgba(255,103,95,0.5);
+    --crit-text:#FF675F;
+    --ok-bg:rgba(187,234,84,0.14);
+    --ok-text:#BBEA54;
     --shadow-lg:0 24px 60px -20px rgba(0,0,0,0.6);
     --shadow-sm:0 4px 16px -4px rgba(0,0,0,0.4);
     --radius:12px;
@@ -61,7 +61,62 @@
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px;}
 
   /* ============ SHELL / HEADER ============ */
-  .shell{max-width:1280px;margin:0 auto;padding:28px 24px 80px;}
+  .shell{max-width:1280px;margin:0 auto;padding:28px 24px 80px;flex:1;min-width:0;}
+  .app-layout{display:flex;min-height:100vh;}
+
+  /* ===== SIDEBAR (Poli Hub) ===== */
+  .sidebar{
+    width:220px;flex-shrink:0;background:var(--bg-surface);border-right:1px solid var(--border-subtle);
+    display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh;
+  }
+  .sidebar-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:15px;padding:4px 6px 20px;}
+  .sidebar-section-label{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--text-tertiary);text-transform:uppercase;padding:0 8px 8px;}
+  .sidebar-nav{display:flex;flex-direction:column;gap:2px;}
+  .sidebar-link{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;font-weight:500;
+    color:var(--text-secondary);cursor:pointer;transition:background .12s,color .12s;
+  }
+  .sidebar-link svg{width:17px;height:17px;flex-shrink:0;}
+  .sidebar-link:hover{background:var(--bg-elevated);color:var(--text-primary);}
+  .sidebar-link.active{background:var(--accent-soft);color:var(--accent);}
+  .sidebar-spacer{flex:1;}
+  .sidebar-user{display:flex;align-items:center;gap:10px;padding:8px 6px;margin-bottom:2px;}
+  .user-avatar{
+    width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-size:11.5px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .user-meta{display:flex;flex-direction:column;line-height:1.25;min-width:0;}
+  .user-meta strong{font-size:12.5px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .user-meta span{font-size:10.5px;color:var(--text-tertiary);}
+  .sidebar-logout{color:var(--crit-text);}
+  .sidebar-logout:hover{background:var(--crit-bg);color:var(--crit-text);}
+
+  /* ===== FAROL STRIP (top status bar) ===== */
+  .farol-strip{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;background:var(--bg-surface);
+    border:1px solid var(--border-subtle);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;
+  }
+  .farol-item{
+    padding:18px 16px 14px;text-align:center;border-right:1px solid var(--border-subtle);
+    border-bottom:3px solid transparent;position:relative;
+  }
+  .farol-item:last-child{border-right:none;}
+  .farol-icon{
+    width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    margin:0 auto 8px;background:var(--bg-elevated-2);
+  }
+  .farol-icon svg{width:17px;height:17px;}
+  .farol-value{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:2px;}
+  .farol-label{font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;}
+  .farol-sub{font-size:10.5px;color:var(--text-tertiary);margin-top:2px;}
+  .farol-crit{border-bottom-color:var(--crit-text);} .farol-crit .farol-icon{color:var(--crit-text);background:var(--crit-bg);} .farol-crit .farol-label{color:var(--crit-text);}
+  .farol-warn{border-bottom-color:var(--warn-text);} .farol-warn .farol-icon{color:var(--warn-text);background:var(--warn-bg);} .farol-warn .farol-label{color:var(--warn-text);}
+  .farol-ok{border-bottom-color:var(--ok-text);} .farol-ok .farol-icon{color:var(--ok-text);background:var(--ok-bg);} .farol-ok .farol-label{color:var(--ok-text);}
+  .farol-accent{border-bottom-color:var(--accent);} .farol-accent .farol-icon{color:var(--accent);background:var(--accent-soft);} .farol-accent .farol-label{color:var(--accent);}
+  .farol-indigo{border-bottom-color:var(--accent-indigo);} .farol-indigo .farol-icon{color:var(--accent-indigo);background:rgba(88,0,255,0.14);} .farol-indigo .farol-label{color:var(--accent-indigo);}
+  .farol-clickable{cursor:pointer;transition:background .12s;}
+  .farol-clickable:hover{background:var(--bg-elevated);}
+  .farol-active{background:var(--bg-elevated);box-shadow:inset 0 0 0 1px var(--crit-text);}
 
 
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px;flex-wrap:wrap;}
