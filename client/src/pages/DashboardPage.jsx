@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import Sidebar from '../components/Sidebar.jsx';
 import Header from '../components/Header.jsx';
 import KpiGrid from '../components/KpiGrid.jsx';
 import UrgencyStrip from '../components/UrgencyStrip.jsx';
@@ -148,9 +147,7 @@ export default function DashboardPage() {
   const ringingTask = ringingQueue.length ? tasks.find(t => t.id === ringingQueue[0]) : null;
 
   return (
-    <div className="app-layout">
-      <Sidebar />
-      <div className="shell">
+    <div className="shell">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} idSearch={idSearch} setIdSearch={setIdSearch}
         onNovo={openNovo} onFoco={() => {}} />
 
@@ -193,7 +190,6 @@ export default function DashboardPage() {
       )}
 
       {popover && <Popover anchorEl={popover.el} items={buildMenuItems(popover.task)} onClose={closePopover} />}
-      </div>
     </div>
   );
 }
