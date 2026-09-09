@@ -10,6 +10,8 @@ export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoo
   const [obs, setObs] = useState('');
   const [novaData, setNovaData] = useState('');
   const [customData, setCustomData] = useState('');
+  const [customQty, setCustomQty] = useState('');
+  const [customUnit, setCustomUnit] = useState('min');
 
   useEffect(() => {
     if (!task) return;
@@ -54,9 +56,24 @@ export default function ActionDialog({ task, tipo, onClose, onConfirmSim, onSnoo
           <div>
             <p className="action-question">Escolha o novo horário:</p>
             <div className="snooze-chip-row">
-              {[15,30,60,1440].map(m => (
-                <button key={m} onClick={() => { onSnoozeChip(m); onClose(); }}>{m === 1440 ? 'Amanhã' : m === 60 ? '+1 h' : `+${m} min`}</button>
+              {[15,30,60,120,240,1440].map(m => (
+                <button key={m} onClick={() => { onSnoozeChip(m); onClose(); }}>{m === 1440 ? 'Amanhã' : m >= 60 ? `+${m/60} h` : `+${m} min`}</button>
               ))}
+            </div>
+            <div className="field">
+              <label>Ou uma quantidade personalizada</label>
+              <div className="snooze-custom-qty">
+                <input type="number" min="1" placeholder="ex: 45" value={customQty}
+                  onChange={e => setCustomQty(e.target.value)} />
+                <select value={customUnit} onChange={e => setCustomUnit(e.target.value)}>
+                  <option value="min">minutos</option>
+                  <option value="h">horas</option>
+                </select>
+                <button className="btn btn-sm" disabled={!customQty}
+                  onClick={() => { const mins = Number(customQty) * (customUnit === 'h' ? 60 : 1); onSnoozeChip(mins); onClose(); }}>
+                  Adiar
+                </button>
+              </div>
             </div>
             <div className="field">
               <label>Ou uma data/hora específica</label>

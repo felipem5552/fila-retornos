@@ -337,6 +337,10 @@
   .snooze-chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
   .snooze-chip-row button{flex:1;min-width:70px;text-align:center;justify-content:center;padding:8px 6px;border:1px solid var(--border-subtle);border-radius:8px;font-size:12px;background:var(--bg-elevated);color:var(--text-secondary);}
   .snooze-chip-row button:hover{border-color:var(--accent);color:var(--accent);}
+  .snooze-custom-qty{display:flex;align-items:center;gap:6px;}
+  .snooze-custom-qty input[type=number]{width:64px;padding:6px 8px;border-radius:8px;border:1px solid var(--border-subtle);background:var(--bg-elevated);color:var(--text-primary);font-size:13px;}
+  .snooze-custom-qty select{padding:6px 8px;border-radius:8px;border:1px solid var(--border-subtle);background:var(--bg-elevated);color:var(--text-primary);font-size:13px;}
+  .snooze-custom-qty button:disabled{opacity:.4;cursor:not-allowed;}
   .action-back-link{background:none;border:none;color:var(--text-tertiary);font-size:12px;padding:6px 2px;margin-top:4px;}
   .action-back-link:hover{color:var(--text-secondary);}
 

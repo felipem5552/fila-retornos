@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { formatDateTime } from '../utils/format';
 
 export default function AlarmOverlay({ task, onComplete, onSnooze, onDismiss }) {
+  const [qty, setQty] = useState('');
+  const [unit, setUnit] = useState('min');
   if (!task) return null;
   return (
     <div className="alarm-overlay open">
@@ -16,6 +19,14 @@ export default function AlarmOverlay({ task, onComplete, onSnooze, onDismiss }) 
           <button className="btn" onClick={() => onSnooze(15)}>+15 min</button>
           <button className="btn" onClick={() => onSnooze(30)}>+30 min</button>
           <button className="btn" onClick={() => onSnooze(60)}>+1 h</button>
+        </div>
+        <div className="snooze-custom-qty" style={{ justifyContent:'center', marginTop:10 }}>
+          <input type="number" min="1" placeholder="ex: 45" value={qty} onChange={e => setQty(e.target.value)} style={{ width:70 }} />
+          <select value={unit} onChange={e => setUnit(e.target.value)}>
+            <option value="min">min</option>
+            <option value="h">h</option>
+          </select>
+          <button className="btn btn-sm" disabled={!qty} onClick={() => onSnooze(Number(qty) * (unit === 'h' ? 60 : 1))}>Adiar</button>
         </div>
         <button className="alarm-dismiss" onClick={onDismiss}>Fechar e silenciar este alerta</button>
       </div>
