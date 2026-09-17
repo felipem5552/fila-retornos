@@ -70,11 +70,16 @@ export function useTasks() {
   }, [fireAlert]);
 
   const load = useCallback(async () => {
-    const data = await TasksAPI.list();
-    setTasks(data);
-    setLoading(false);
-    checkAlerts(data);
-    return data;
+    try {
+      const data = await TasksAPI.list();
+      setTasks(data);
+      checkAlerts(data);
+      return data;
+    } catch (err) {
+      console.error('[useTasks] Falha ao carregar tarefas:', err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [checkAlerts]);
 
   useEffect(() => {

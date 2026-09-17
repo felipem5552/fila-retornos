@@ -9,15 +9,12 @@ import TaskPanel from '../components/TaskPanel.jsx';
 import ActionDialog from '../components/ActionDialog.jsx';
 import AlarmOverlay from '../components/AlarmOverlay.jsx';
 import Popover from '../components/Popover.jsx';
+import { IconCalendar, IconClock, IconCopy, IconTrash } from '../components/icons.jsx';
 import { useTasks } from '../hooks/useTasks.js';
 import { useToast } from '../context/ToastContext.jsx';
-import { buildCardSummary, buildICS, buildReturnMessage, copyToClipboard, downloadCSV, downloadFile, formatDateTime, formatDuration, isSameDay, isThisMonth, isThisWeek, minutesUntil, toDateInputValue, urgencyState } from '../utils/format';
+import { buildCardSummary, buildICS, buildReturnMessage, copyToClipboard, downloadFile, minutesUntil, toDateInputValue, urgencyState } from '../utils/format';
 
 const ICONS = {
-  clock: <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8"/><path d="M12 8V12L15 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>,
-  copy: <svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M16 8V6A2 2 0 0014 4H6A2 2 0 004 6V14A2 2 0 006 16H8" stroke="currentColor" strokeWidth="1.8"/></svg>,
-  calendar: <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M4 10H20M8 4V7M16 4V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>,
-  trash: <svg viewBox="0 0 24 24" fill="none"><path d="M5 7H19M9 7V5A1 1 0 0110 4H14A1 1 0 0115 5V7M18 7L17.3 19A1 1 0 0116.3 20H7.7A1 1 0 016.7 19L6 7H18Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>,
   send: <svg viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/></svg>,
   alert: <svg viewBox="0 0 24 24" fill="none"><path d="M12 9V13M12 17H12.01M10.3 3.9L2.5 17A1.5 1.5 0 003.8 19H20.2A1.5 1.5 0 0021.5 17L13.7 3.9A1.5 1.5 0 0010.3 3.9Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>
 };
@@ -88,10 +85,14 @@ export default function DashboardPage() {
   function openActionDialog(task, tipo) { setActionTask(task); setActionTipo(tipo); }
   function closeActionDialog() { setActionTask(null); setActionTipo(null); }
 
-  async function handleReopen(t) { await runAction(t.id, { tipo:'reabrir' }); showToast('Retorno reaberto.'); }
+  async function handleReopen(t) {
+    try { await runAction(t.id, { tipo: 'reabrir' }); showToast('Retorno reaberto.'); }
+    catch (err) { showToast(err.message, '', 'crit'); }
+  }
   async function handleDelete(t) {
     if (!confirm(`Excluir o retorno de "${t.nome}"?`)) return;
-    await deleteTask(t.id); showToast('Retorno excluído.');
+    try { await deleteTask(t.id); showToast('Retorno excluído.'); }
+    catch (err) { showToast(err.message, '', 'crit'); }
   }
   async function handleDuplicate(t) {
     const motivoReagendo = prompt('Por que está duplicando/reagendando este retorno? (ex: alta demanda hoje, cliente pediu, etc.)\nDeixe em branco para pular.');
@@ -123,24 +124,24 @@ export default function DashboardPage() {
   function buildMenuItems(task) {
     const items = [];
     items.push({ icon: ICONS.send, text:'Copiar mensagem de retorno', action: () => { copyToClipboard(buildReturnMessage(task)); showToast('Mensagem copiada.'); } });
-    items.push({ icon: ICONS.copy, text:'Copiar resumo do card', action: () => { copyToClipboard(buildCardSummary(task)); showToast('Resumo copiado.'); } });
+    items.push({ icon: IconCopy, text:'Copiar resumo do card', action: () => { copyToClipboard(buildCardSummary(task)); showToast('Resumo copiado.'); } });
     items.push({ sep:true });
     if (task.status === 'Pendente') {
       items.push({ label:'Adiar' });
-      items.push({ icon: ICONS.clock, text:'+ 15 minutos', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:15 }) });
-      items.push({ icon: ICONS.clock, text:'+ 30 minutos', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:30 }) });
-      items.push({ icon: ICONS.clock, text:'+ 1 hora', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:60 }) });
-      items.push({ icon: ICONS.clock, text:'Amanhã (mesmo horário)', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:1440 }) });
+      items.push({ icon: IconClock, text:'+ 15 minutos', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:15 }) });
+      items.push({ icon: IconClock, text:'+ 30 minutos', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:30 }) });
+      items.push({ icon: IconClock, text:'+ 1 hora', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:60 }) });
+      items.push({ icon: IconClock, text:'Amanhã (mesmo horário)', action: () => runAction(task.id, { tipo:'adiar_rapido', minutos:1440 }) });
       items.push({ icon: ICONS.alert, text:'Adiar com motivo…', action: () => openActionDialog(task, 'adiar') });
       items.push({ sep:true });
     }
     if (task.interacoes && task.interacoes.length > 0) {
-      items.push({ icon: ICONS.clock, text:`Ver histórico (${task.interacoes.length})`, action: () => openEdit(task) });
+      items.push({ icon: IconClock, text:`Ver histórico (${task.interacoes.length})`, action: () => openEdit(task) });
     }
-    items.push({ icon: ICONS.copy, text:'Duplicar retorno', action: () => handleDuplicate(task) });
-    if (task.status === 'Pendente') items.push({ icon: ICONS.calendar, text:'Adicionar ao calendário (.ics)', action: () => downloadFile(`retorno-${task.nome.replace(/\s+/g,'-').toLowerCase()}.ics`, buildICS(task), 'text/calendar') });
+    items.push({ icon: IconCopy, text:'Duplicar retorno', action: () => handleDuplicate(task) });
+    if (task.status === 'Pendente') items.push({ icon: IconCalendar, text:'Adicionar ao calendário (.ics)', action: () => downloadFile(`retorno-${task.nome.replace(/\s+/g,'-').toLowerCase()}.ics`, buildICS(task), 'text/calendar') });
     items.push({ sep:true });
-    items.push({ icon: ICONS.trash, text:'Excluir', danger:true, action: () => handleDelete(task) });
+    items.push({ icon: IconTrash, text:'Excluir', danger:true, action: () => handleDelete(task) });
     return items;
   }
 

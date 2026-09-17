@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UsersAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -14,8 +14,12 @@ export default function AdminPage() {
   const [form, setForm] = useState(EMPTY);
   const editing = !!form.id;
 
-  async function load() { setUsers(await UsersAPI.list()); }
-  useEffect(() => { load(); }, []);
+  const load = useCallback(async () => {
+    try { setUsers(await UsersAPI.list()); }
+    catch (err) { showToast(err.message, '', 'crit'); }
+  }, [showToast]);
+
+  useEffect(() => { load(); }, [load]);
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })); }
   function startEdit(u) { setForm({ id:u.id, nome:u.nome, username:u.username, password:'', role:u.role }); window.scrollTo({ top:0, behavior:'smooth' }); }

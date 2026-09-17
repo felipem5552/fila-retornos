@@ -54,16 +54,6 @@ export function urgencyState(iso) {
   if (diff <= WARNING_MINUTES) return 'warning';
   return 'normal';
 }
-export function formatElapsed(hours) {
-  if (hours < 1) return 'há poucos minutos';
-  if (hours < 24) return `há ${Math.round(hours)}h`;
-  const days = Math.floor(hours/24);
-  return `há ${days} dia${days>1?'s':''}`;
-}
-export function getLastPendenciaDate(task) {
-  const abertas = (task.interacoes || []).filter(it => it.definitivo === false);
-  return abertas.length ? abertas[abertas.length-1].data : null;
-}
 export function copyToClipboard(text) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
@@ -111,4 +101,3 @@ export function buildReturnMessage(task) {
 export function buildCardSummary(task) {
   return `#${task.empresa_id} · ${task.nome} · ${task.motivo} · ${formatDateTime(task.data_hora)}${task.anotacoes ? ' · ' + task.anotacoes : ''}`;
 }
-export function generateId() { return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
