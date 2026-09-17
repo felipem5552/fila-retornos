@@ -37,6 +37,20 @@ export function localInputToISO(value) {
   return new Date(y, mo - 1, d, h, mi).toISOString();
 }
 export function minutesUntil(iso) { return Math.round((new Date(iso).getTime() - Date.now()) / 60000); }
+
+/* Converte minutos de atraso (número negativo ou positivo) em texto legível.
+   Exemplos: -18414 → "12d 18h" | -135 → "2h 15min" | -45 → "45min" */
+export function formatDelay(diffMin) {
+  const abs = Math.abs(diffMin);
+  if (abs < 60) return `${abs}min`;
+  if (abs < 1440) {
+    const h = Math.floor(abs / 60), m = abs % 60;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
+  }
+  const dias = Math.floor(abs / 1440);
+  const horas = Math.floor((abs % 1440) / 60);
+  return horas > 0 ? `${dias}d ${horas}h` : `${dias}d`;
+}
 export function isSameDay(a,b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 export function isThisWeek(d) {
   const now = new Date();
