@@ -1,4 +1,4 @@
-import { formatDateTime, minutesUntil, urgencyState } from '../utils/format';
+import { formatDateTime, formatDelay, minutesUntil, urgencyState } from '../utils/format';
 
 export default function UrgencyStrip({ tasks, soundOn, setSoundOn }) {
   const pendentes = tasks.filter(t => t.status === 'Pendente');
