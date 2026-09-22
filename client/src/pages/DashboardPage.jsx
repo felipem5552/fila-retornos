@@ -8,6 +8,7 @@ import TaskPanel from '../components/TaskPanel.jsx';
 import ActionDialog from '../components/ActionDialog.jsx';
 import AlarmOverlay from '../components/AlarmOverlay.jsx';
 import Popover from '../components/Popover.jsx';
+import AlertBubble from '../components/AlertBubble.jsx';
 import { IconCalendar, IconClock, IconCopy, IconTrash } from '../components/icons.jsx';
 import { useTasks } from '../hooks/useTasks.js';
 import { useToast } from '../context/ToastContext.jsx';
@@ -272,6 +273,9 @@ export default function DashboardPage() {
       {popover && (
         <Popover anchorEl={popover.el} items={buildMenuItems(popover.task)} onClose={closePopover} />
       )}
+
+      {/* ── Bolha de alertas de urgência ──────────────────────────────────── */}
+      <AlertBubble />
     </div>
   );
 }
