@@ -20,4 +20,12 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-module.exports = { requireAuth, requireAdmin };
+function requireApiKey(req, res, next) {
+  const key = req.headers['x-api-key'];
+  if (!key || key !== process.env.ALERTS_API_KEY) {
+    return res.status(401).json({ error: 'Chave de API inválida ou ausente.' });
+  }
+  next();
+}
+
+module.exports = { requireAuth, requireAdmin, requireApiKey };
