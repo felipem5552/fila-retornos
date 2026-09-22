@@ -11,6 +11,7 @@ const { hashPassword } = require('./auth');
 const authRoutes = require('./routes/auth.routes');
 const usersRoutes = require('./routes/users.routes');
 const tasksRoutes = require('./routes/tasks.routes');
+const alertsRoutes = require('./routes/alerts.routes');
 
 const app = express();
 app.use(express.json());
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/tasks', tasksRoutes);
+app.use('/api/alerts', alertsRoutes);
 
 /* Cria os logins iniciais só na primeiríssima vez que o servidor sobe
    (banco vazio). Depois disso, tudo é gerenciado pelo painel Admin —
