@@ -1,5 +1,4 @@
 import { MOTIVO_CLASS, formatDelay, formatDuration, minutesUntil, urgencyState, WARNING_MINUTES } from '../utils/format';
-import { IconAlertClock } from './icons.jsx';
 
 // ── Ícones de ação ────────────────────────────────────────────────────────────
 const ICON_CHECK  = <svg viewBox="0 0 24 24" fill="none"><path d="M5 13L9 17L19 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
@@ -53,10 +52,11 @@ export function PendingCard({ t, onComplete, onEdit, onMore }) {
         <p className="task-card__anot">{t.anotacoes}</p>
       )}
 
-      {/* Badge de pendência */}
+      {/* Badge de pendência — texto compacto, sem ícone SVG */}
       {t.ultima_pendencia && (
         <span className="pendencia-badge">
-          {IconAlertClock}{t.ultima_pendencia}
+          <span className="pendencia-badge__dot">●</span>
+          {t.ultima_pendencia}
         </span>
       )}
 

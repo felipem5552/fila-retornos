@@ -583,11 +583,13 @@
   .action-back-link:hover{color:var(--text-secondary);}
 
   .pendencia-badge{
-    display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;
-    padding:2px 8px;border-radius:20px;margin-top:4px;margin-right:5px;
+    display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+    padding:3px 9px;border-radius:20px;margin-top:2px;
     background:rgba(138,160,255,0.14);color:var(--accent-indigo);border:1px solid rgba(138,160,255,0.35);
     white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+    line-height:1.4;
   }
+  .pendencia-badge__dot{font-size:7px;opacity:.8;flex-shrink:0;}
   .pendencia-badge.stale{
     background:var(--crit-bg);color:var(--crit-text);border:1px solid var(--crit-border);
   }
