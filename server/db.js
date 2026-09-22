@@ -56,4 +56,4 @@ function writeDb(data) {
   });
 }
 
-module.exports = { init, readDb, writeDb };
+module.exports = { init, readDb, writeDb, pool };
