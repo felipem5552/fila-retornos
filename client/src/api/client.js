@@ -28,3 +28,8 @@ export const UsersAPI = {
   update: (id, body) => api(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   remove: (id) => api(`/api/users/${id}`, { method: 'DELETE' })
 };
+
+export const AlertsAPI = {
+  list: () => api('/api/alerts?unread=true'),
+  markAsRead: (id) => api(`/api/alerts/${id}/read`, { method: 'PATCH' })
+};
