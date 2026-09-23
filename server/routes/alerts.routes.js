@@ -3,7 +3,6 @@ const router = express.Router();
 const { pool } = require('../db');
 const { requireAuth, requireApiKey } = require('../middleware');
 
-// GET /api/alerts?unread=true — painel logado busca os alertas
 router.get('/', requireAuth, async (req, res) => {
   const unreadOnly = req.query.unread === 'true';
   const query = unreadOnly
@@ -17,7 +16,6 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-// POST /api/alerts — chamado pelo n8n (chave de API, não cookie)
 router.post('/', requireApiKey, async (req, res) => {
   const { cliente, urgencia, resumo, attendance_uuid } = req.body || {};
   try {
@@ -31,10 +29,23 @@ router.post('/', requireApiKey, async (req, res) => {
   }
 });
 
-// PATCH /api/alerts/:id/read — painel logado marca como lido
 router.patch('/:id/read', requireAuth, async (req, res) => {
   try {
     await pool.query(`UPDATE alerts SET read = TRUE WHERE id = $1`, [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH /api/alerts/read-all?onlyNonUrgent=true — limpa em lote
+router.patch('/read-all', requireAuth, async (req, res) => {
+  const onlyNonUrgent = req.query.onlyNonUrgent === 'true';
+  const query = onlyNonUrgent
+    ? `UPDATE alerts SET read = TRUE WHERE read = FALSE AND urgencia != 'Alta'`
+    : `UPDATE alerts SET read = TRUE WHERE read = FALSE`;
+  try {
+    await pool.query(query);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
