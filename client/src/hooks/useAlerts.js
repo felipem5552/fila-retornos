@@ -4,12 +4,13 @@ import { AlertsAPI } from '../api/client';
 export function useAlerts() {
   const [alerts, setAlerts] = useState([]);
 
+  const fetchAlerts = () => {
+    AlertsAPI.list().then(setAlerts).catch(() => {});
+  };
+
   useEffect(() => {
-    const fetchAlerts = () => {
-      AlertsAPI.list().then(setAlerts).catch(() => {});
-    };
     fetchAlerts();
-    const interval = setInterval(fetchAlerts, 8000); // a cada 8s
+    const interval = setInterval(fetchAlerts, 8000);
     return () => clearInterval(interval);
   }, []);
 
@@ -18,5 +19,14 @@ export function useAlerts() {
     setAlerts(prev => prev.filter(a => a.id !== id));
   };
 
-  return { alerts, markAsRead };
+  const clearAll = async (onlyNonUrgent = false) => {
+    await AlertsAPI.clearAll(onlyNonUrgent);
+    if (onlyNonUrgent) {
+      setAlerts(prev => prev.filter(a => a.urgencia === 'Alta'));
+    } else {
+      setAlerts([]);
+    }
+  };
+
+  return { alerts, markAsRead, clearAll };
 }
