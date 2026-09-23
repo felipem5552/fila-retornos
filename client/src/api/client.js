@@ -31,5 +31,6 @@ export const UsersAPI = {
 
 export const AlertsAPI = {
   list: () => api('/api/alerts?unread=true'),
-  markAsRead: (id) => api(`/api/alerts/${id}/read`, { method: 'PATCH' })
+  markAsRead: (id) => api(`/api/alerts/${id}/read`, { method: 'PATCH' }),
+  clearAll: (onlyNonUrgent = false) => api(`/api/alerts/read-all?onlyNonUrgent=${onlyNonUrgent}`, { method: 'PATCH' })
 };
